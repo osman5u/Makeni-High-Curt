@@ -20,6 +20,12 @@
 # production
 /build
 
+# local database
+legal_system.db
+
+# uploaded files (kept on the server, not in repo)
+/uploads/
+
 # misc
 .DS_Store
 *.pem

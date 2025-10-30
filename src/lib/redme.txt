@@ -1,0 +1,4 @@
+Invoke-RestMethod -Uri "http://localhost:3000/api/setup/create-first-admin" `
+>>   -Method POST `
+>>   -ContentType "application/json" `
+>>   -Body '{"username":"admin","email":"osman@.com","password":"1234","full_name":"Admin"}' 

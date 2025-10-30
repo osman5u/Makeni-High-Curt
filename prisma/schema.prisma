@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                         Int             @id @default(autoincrement())
+  username                   String          @unique
+  email                      String          @unique
+  password                   String
+  full_name                  String
+  role                       Role
+  profile_picture            String?
+  contact_address            String?
+  is_lawyer                  Boolean         @default(false)
+  is_active                  Boolean         @default(true)
+  is_superuser               Boolean         @default(false)
+  is_verified                Boolean         @default(false)
+  verification_token         String?
+  verification_token_expires DateTime?
+  reset_token                String?
+  reset_token_expires        DateTime?
+  created_at                 DateTime        @default(now())
+  updated_at                 DateTime        @updatedAt
+  cases_client               Case[]          @relation("ClientCases")
+  cases_lawyer               Case[]          @relation("LawyerCases")
+  chat_rooms_client          ChatRoom[]      @relation("ClientChatRooms")
+  chat_rooms_lawyer          ChatRoom[]      @relation("LawyerChatRooms")
+  documents                  Document[]      @relation("LawyerDocuments")
+  uploads                    Document[]      @relation("UploadedDocuments")
+  documentViews              DocumentView[]
+  messages                   Message[]       @relation("SenderMessages")
+  message_statuses_received  MessageStatus[] @relation("RecipientMessageStatuses")
+  notifications_received     Notification[]  @relation("RecipientNotifications")
+  notifications_sent         Notification[]  @relation("SenderNotifications")
+  tracking_updates           CaseTrackingHistory[] @relation("CaseTrackingHistory_UpdatedBy")
+}
+
+model Case {
+  id                Int            @id @default(autoincrement())
+  title             String
+  description       String
+  client_id         Int
+  lawyer_id         Int
+  due_date          DateTime
+  // Tracking fields
+  court_start_date  DateTime?
+  decision_deadline DateTime?
+  outcome           CaseOutcome    @default(pending)
+  progress          String?
+  status            CaseStatus     @default(pending)
+  rejection_comment String?
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  client            User           @relation("ClientCases", fields: [client_id], references: [id])
+  lawyer            User           @relation("LawyerCases", fields: [lawyer_id], references: [id])
+  chat_room         ChatRoom?
+  documents         Document[]
+  notifications     Notification[]
+  tracking_history  CaseTrackingHistory[] @relation("CaseTrackingHistory_Case")
+}
+
+
+enum CaseOutcome {
+  pending
+  won
+  lost
+}
+
+model Document {
+  id            Int            @id @default(autoincrement())
+  case_id       Int
+  lawyer_id     Int
+  file_path     String
+  original_name String
+  uploaded_by   Int
+  uploaded_at   DateTime       @default(now())
+  filename      String?
+  file_size     Int?
+  case          Case           @relation(fields: [case_id], references: [id])
+  lawyer        User           @relation("LawyerDocuments", fields: [lawyer_id], references: [id])
+  uploader      User           @relation("UploadedDocuments", fields: [uploaded_by], references: [id])
+  views         DocumentView[]
+}
+
+model ChatRoom {
+  id         Int       @id @default(autoincrement())
+  case_id    Int       @unique
+  client_id  Int
+  lawyer_id  Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  case       Case      @relation(fields: [case_id], references: [id])
+  client     User      @relation("ClientChatRooms", fields: [client_id], references: [id])
+  lawyer     User      @relation("LawyerChatRooms", fields: [lawyer_id], references: [id])
+  messages   Message[]
+}
+
+model Message {
+  id           Int             @id @default(autoincrement())
+  chat_room_id Int
+  sender_id    Int
+  message_type MessageType     @default(text)
+  content      String
+  file_path    String?
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+  chat_room    ChatRoom        @relation(fields: [chat_room_id], references: [id])
+  sender       User            @relation("SenderMessages", fields: [sender_id], references: [id])
+  statuses     MessageStatus[]
+
+  @@index([chat_room_id, created_at])
+  @@index([sender_id, created_at])
+}
+
+model MessageStatus {
+  id           Int               @id @default(autoincrement())
+  message_id   Int
+  recipient_id Int
+  status       MessageStatusEnum @default(sent)
+  updated_at   DateTime          @default(now())
+  message      Message           @relation(fields: [message_id], references: [id])
+  recipient    User              @relation("RecipientMessageStatuses", fields: [recipient_id], references: [id])
+
+  @@unique([message_id, recipient_id])
+  @@index([recipient_id, status])
+}
+
+model Notification {
+  id           Int      @id @default(autoincrement())
+  case_id      Int
+  message      String
+  read         Boolean  @default(false)
+  recipient_id Int
+  sender_id    Int?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  case         Case     @relation(fields: [case_id], references: [id])
+  recipient    User     @relation("RecipientNotifications", fields: [recipient_id], references: [id])
+  sender       User?    @relation("SenderNotifications", fields: [sender_id], references: [id])
+
+  @@index([recipient_id, read])
+  @@index([recipient_id, created_at])
+}
+
+model DocumentView {
+  id          Int      @id @default(autoincrement())
+  document_id Int
+  user_id     Int
+  viewed_at   DateTime @default(now())
+  document    Document @relation(fields: [document_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@unique([document_id, user_id])
+}
+
+enum CaseStatus {
+  pending
+  approved
+  rejected
+}
+
+enum MessageType {
+  text
+  file
+  image
+}
+
+enum MessageStatusEnum {
+  sent
+  delivered
+  read
+}
+
+enum Role {
+  client
+  lawyer
+  admin
+}
+
+model CaseTrackingHistory {
+  id                Int           @id @default(autoincrement())
+  case_id           Int
+  updated_by_id     Int
+  court_start_date  DateTime?
+  decision_deadline DateTime?
+  outcome           CaseOutcome?
+  progress          String?
+  changes           String?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  case              Case          @relation("CaseTrackingHistory_Case", fields: [case_id], references: [id])
+  updated_by        User          @relation("CaseTrackingHistory_UpdatedBy", fields: [updated_by_id], references: [id])
+
+  @@index([case_id, created_at])
+}

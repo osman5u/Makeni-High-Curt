@@ -1,0 +1,137 @@
+/* Unique responsive design for Case Tracking History */
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, #f8f9fa, #eef1f5);
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  color: #334155;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.history-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background 0.15s ease;
+}
+
+.history-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.history-table td,
+.history-table th {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+/* Outcome badges */
+.badge-outcome {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.badge-outcome.pending {
+  background: #fff3cd;
+  color: #8a6d3b;
+  border: 1px solid #ffe69c;
+}
+.badge-outcome.won {
+  background: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #a3cfbb;
+}
+.badge-outcome.lost {
+  background: #f8d7da;
+  color: #842029;
+  border: 1px solid #f1aeb5;
+}
+
+/* Chip for updater */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f3f5;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Clamp long text */
+.clamped-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Actions */
+.history-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+.history-actions .icon-btn {
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #495057;
+  padding: 6px 10px;
+  border-radius: 8px;
+  line-height: 1;
+}
+.history-actions .icon-btn:hover {
+  background: #f8f9fa;
+}
+
+/* Mobile: stack rows into cards */
+@media (max-width: 768px) {
+  .history-table thead {
+    display: none;
+  }
+  .history-table,
+  .history-table tbody,
+  .history-table tr,
+  .history-table td {
+    display: block;
+    width: 100%;
+  }
+  .history-table tbody tr {
+    margin: 0 0 12px 0;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .history-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .history-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6c757d;
+    margin-right: 12px;
+  }
+  .history-actions {
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+}
+
+/* Hide the second Delete button when duplicates render */
+.history-table td[data-label="Actions"] .btn-outline-danger + .btn-outline-danger {
+  display: none;
+}
