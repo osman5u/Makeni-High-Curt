@@ -16,7 +16,7 @@ try {
       host: SMTP_HOST,
       port: SMTP_PORT,
       secure: SMTP_SECURE ?? SMTP_PORT === 465,
-      auth: { user: EMAIL_USER, pass: EMAIL_APP_PASSWORD },
+      auth: { user: EMAIL_USER , pass: EMAIL_APP_PASSWORD },
       connectionTimeout: 15000,
     });
   } else if (EMAIL_USER && EMAIL_APP_PASSWORD) {
@@ -25,7 +25,7 @@ try {
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
-      auth: { user: EMAIL_USER, pass: EMAIL_APP_PASSWORD },
+      auth: { user: EMAIL_USER || 'osesay117@gmail.com', pass: EMAIL_APP_PASSWORD || 'cunijcmsrqxblqzr' },
       connectionTimeout: 15000,
     });
   } else {
@@ -50,10 +50,10 @@ export function generateResetToken(): string {
 // Send verification email
 export async function sendVerificationEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://makenihighcurt.onrender.com'}/verify-email?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
+      from: process.env.EMAIL_USER || 'osesay117@gmail.com.com',
       to: email,
       subject: 'Verify Your Legal System Account',
       html: `
@@ -127,10 +127,10 @@ export async function sendVerificationEmail(email: string, token: string, fullNa
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://makenihighcurt.onrender.com'}/reset-password?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
+      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
       to: email,
       subject: 'Reset Your Legal System Password',
       html: `
