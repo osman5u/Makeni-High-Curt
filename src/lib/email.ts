@@ -53,7 +53,7 @@ export async function sendVerificationEmail(email: string, token: string, fullNa
     const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'your-email@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: email,
       subject: 'Verify Your Legal System Account',
       html: `
@@ -99,6 +99,23 @@ export async function sendVerificationEmail(email: string, token: string, fullNa
       `
     };
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
@@ -113,7 +130,7 @@ export async function sendPasswordResetEmail(email: string, token: string, fullN
     const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'legalsystem001@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: email,
       subject: 'Reset Your Legal System Password',
       html: `
@@ -159,6 +176,23 @@ export async function sendPasswordResetEmail(email: string, token: string, fullN
       `
     };
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
@@ -173,7 +207,7 @@ export async function sendWelcomeEmail(email: string, fullName: string, role: st
     const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/${role}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: email,
       subject: 'Welcome to Legal System!',
       html: `
@@ -221,6 +255,23 @@ export async function sendWelcomeEmail(email: string, fullName: string, role: st
       `
     };
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
@@ -242,7 +293,7 @@ export async function sendNewCaseEmailToLawyer(params: {
     const dueDateStr = new Date(params.dueDate).toLocaleDateString();
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: params.to,
       subject: `New Case Assigned • ${params.caseTitle}`,
       html: `
@@ -270,6 +321,23 @@ export async function sendNewCaseEmailToLawyer(params: {
       `,
     } as any;
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
@@ -289,7 +357,7 @@ export async function sendCaseApprovedEmailToClient(params: {
     const dashboardUrl = `${baseUrl}/dashboard/client`;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: params.to,
       subject: `Your Case Was Approved • ${params.caseTitle}`,
       html: `
@@ -317,6 +385,23 @@ export async function sendCaseApprovedEmailToClient(params: {
       `,
     } as any;
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
@@ -334,7 +419,7 @@ export async function sendCaseOutcomeReceiptEmail(params: {
 }): Promise<boolean> {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
       to: params.to,
       subject: params.subject,
       html: params.html,
@@ -347,6 +432,29 @@ export async function sendCaseOutcomeReceiptEmail(params: {
       ],
     } as any;
 
+    if (process.env.RESEND_API_KEY) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: mailOptions.from,
+          to: [mailOptions.to],
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+          attachments: [
+            {
+              filename: mailOptions.attachments[0].filename,
+              content: mailOptions.attachments[0].content.toString('base64'),
+            },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend failed: ${res.status}`);
+      return true;
+    }
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
