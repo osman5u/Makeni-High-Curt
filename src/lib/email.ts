@@ -1,14 +1,41 @@
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
-// Email configuration
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER || 'osesay117@gmail.com',
-    pass: process.env.EMAIL_APP_PASSWORD || 'cunijcmsrqxblqzr'
+// Email configuration with flexible SMTP and sane timeouts
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_PORT = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined;
+const SMTP_SECURE = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined;
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD;
+
+let transporter: nodemailer.Transporter;
+try {
+  if (SMTP_HOST && SMTP_PORT && EMAIL_USER && EMAIL_APP_PASSWORD) {
+    // Use explicit SMTP host/port when provided
+    transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_SECURE ?? SMTP_PORT === 465,
+      auth: { user: EMAIL_USER, pass: EMAIL_APP_PASSWORD },
+      connectionTimeout: 15000,
+    });
+  } else if (EMAIL_USER && EMAIL_APP_PASSWORD) {
+    // Default to Gmail SMTP with TLS
+    transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user: EMAIL_USER, pass: EMAIL_APP_PASSWORD },
+      connectionTimeout: 15000,
+    });
+  } else {
+    // Fallback: JSON transport to avoid crashes when email isn't configured
+    transporter = nodemailer.createTransport({ jsonTransport: true });
   }
-});
+} catch {
+  // As a last resort, prevent crashes by using JSON transport
+  transporter = nodemailer.createTransport({ jsonTransport: true });
+}
 
 // Generate verification token
 export function generateVerificationToken(): string {
