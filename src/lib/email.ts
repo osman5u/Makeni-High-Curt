@@ -2,9 +2,14 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
 // Email configuration with flexible SMTP and sane timeouts
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined;
-const SMTP_SECURE = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined;
+// Support both SMTP_* and EMAIL_* alias keys from environment
+const SMTP_HOST = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+const SMTP_PORT = process.env.SMTP_PORT
+  ? Number(process.env.SMTP_PORT)
+  : (process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined);
+const SMTP_SECURE = process.env.SMTP_SECURE
+  ? process.env.SMTP_SECURE === 'true'
+  : (process.env.EMAIL_SECURE ? process.env.EMAIL_SECURE === 'true' : undefined);
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD;
 
@@ -20,13 +25,15 @@ try {
       connectionTimeout: 15000,
     });
   } else if (EMAIL_USER && EMAIL_APP_PASSWORD) {
-    // Default to Gmail SMTP with TLS
+    // Default to Gmail SMTP using STARTTLS on port 587 (more reliable on Render)
     transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: { user: EMAIL_USER || 'osesay117@gmail.com', pass: EMAIL_APP_PASSWORD || 'cunijcmsrqxblqzr' },
-      connectionTimeout: 15000,
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: { user: EMAIL_USER, pass: EMAIL_APP_PASSWORD },
+      connectionTimeout: 20000,
+      socketTimeout: 20000,
     });
   } else {
     // Fallback: JSON transport to avoid crashes when email isn't configured
@@ -50,10 +57,10 @@ export function generateResetToken(): string {
 // Send verification email
 export async function sendVerificationEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com'}/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurtffl.onrender.com',
       to: email,
       subject: 'Verify Your Legal System Account',
       html: `
@@ -127,10 +134,10 @@ export async function sendVerificationEmail(email: string, token: string, fullNa
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com'}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
     
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'osesay117@gmail.com',
+      from: process.env.EMAIL_USER || 'no-reply@makenihighcurtffl.onrender.com',
       to: email,
       subject: 'Reset Your Legal System Password',
       html: `
