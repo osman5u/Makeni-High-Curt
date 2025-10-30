@@ -50,7 +50,7 @@ export function generateResetToken(): string {
 // Send verification email
 export async function sendVerificationEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://makenihighcurt.onrender.com'}/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com'}/verify-email?token=${token}`;
     
     const mailOptions = {
       from: process.env.EMAIL_USER || 'osesay117@gmail.com.com',
@@ -127,7 +127,7 @@ export async function sendVerificationEmail(email: string, token: string, fullNa
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, token: string, fullName: string): Promise<boolean> {
   try {
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://makenihighcurt.onrender.com'}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com'}/reset-password?token=${token}`;
     
     const mailOptions = {
       from: process.env.EMAIL_USER || 'osesay117@gmail.com',
@@ -204,7 +204,7 @@ export async function sendPasswordResetEmail(email: string, token: string, fullN
 // Send welcome email after verification
 export async function sendWelcomeEmail(email: string, fullName: string, role: string): Promise<boolean> {
   try {
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/${role}`;
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com'}/dashboard/${role}`;
     
     const mailOptions = {
       from: process.env.EMAIL_USER || 'no-reply@makenihighcurt.onrender.com',
@@ -288,7 +288,7 @@ export async function sendNewCaseEmailToLawyer(params: {
   dueDate: Date;
 }): Promise<boolean> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com';
     const dashboardUrl = `${baseUrl}/dashboard/lawyer`;
     const dueDateStr = new Date(params.dueDate).toLocaleDateString();
 
@@ -353,7 +353,7 @@ export async function sendCaseApprovedEmailToClient(params: {
   lawyerName: string;
 }): Promise<boolean> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'makenihighcurtffl.onrender.com';
     const dashboardUrl = `${baseUrl}/dashboard/client`;
 
     const mailOptions = {
